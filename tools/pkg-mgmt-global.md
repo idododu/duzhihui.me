@@ -1,9 +1,9 @@
-## 新机开发环境设置
-### 安装依赖
+## 新机开发环境设置  
+### 安装依赖  
 1. [VS Code](https://code.visualstudio.com/)
 2. [Node.JS](https://nodejs.org)
 3. [Yarn](https://yarnpkg.com)
-### 安装全局常用包
+### 安装全局常用包  
 ```bash
 # 避免被墙，使用以下config设置
 yarn config set registry http://registry.npm.taobao.org

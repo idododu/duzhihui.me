@@ -177,16 +177,23 @@ class NameForm extends React.Component {
 ### 兄弟组件通信  
 ### 嵌套组件通信  
 ### 非嵌套组件通信  
-{% mermaid %}
+<div class="mermaid">
 graph TD;
     A-->A1;
     B-->B1;
     A1-->B1;
     B1-->A1;
-{% endmermaid %}
+</div>
 1. EventEmitter发布订阅通信
 2. 使用状态管理进行通信
 
 ## 状态管理  
 ## 表单集成  
 ## 性能优化  
+
+<script src="https://unpkg.com/mermaid@8.4.8/dist/mermaid.core.js"></script>
+  <script>
+    mermaid.initialize({
+      theme: 'forest'
+    });
+  </script>

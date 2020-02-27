@@ -1,11 +1,4 @@
 <script src="https://unpkg.com/mermaid@8.4.8/dist/mermaid.core.js"></script>
-<script>
-    $(document).ready(function() {
-        mermaid.initialize({
-            theme: 'forest'
-        });
-    });
-</script>
 
 ## React的核心理念  
 1. f(state) = view  
@@ -200,3 +193,11 @@ graph TD;
 ## 状态管理  
 ## 表单集成  
 ## 性能优化  
+
+<script>
+    $(document).ready(function() {
+        mermaid.initialize({
+            theme: 'forest'
+        });
+    });
+</script>

@@ -1,3 +1,7 @@
+---
+mermaid: true
+---
+
 ## React的核心理念  
 1. f(state) = view  
 2. 一切皆组件  
@@ -67,6 +71,7 @@ function App() {
 - 展示组件负责根据父组件传递的属性显示信息以及响应用户交互，它一般是无状态的  
 - 容器组件也叫状态组件(Stateful Component)， 展示组件也叫无状态组件(Stateless Component)  
 - 容器组件也叫Smart Component， 展示组件也叫Dumb component  
+
 ```es6
 // 容器组件
 import React from 'react';
@@ -190,10 +195,3 @@ graph TD;
 ## 状态管理  
 ## 表单集成  
 ## 性能优化  
-
-<script src="https://unpkg.com/mermaid@8.4.8/dist/mermaid.core.js"></script>
-  <script>
-    mermaid.initialize({
-      theme: 'forest'
-    });
-  </script>

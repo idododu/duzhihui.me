@@ -1,1 +1,4 @@
 .history/
+_site
+Gemfile
+Gemfile.lock

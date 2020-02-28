@@ -170,26 +170,228 @@ class NameForm extends React.Component {
 - 核心理念： enhancedComponent = hocFactory(wrappedComponent)
 - 使用高阶组件可以实现以下效果
   - 代码复用(DRY)
-  - 渲染劫持(Render Hijacking)
   - 属性代理(Props Proxy)
   - 反向继承(Inheritance Inversion)
+  - 渲染劫持(Render Hijacking)
 
-## Virtual DOM原理  
+```es6
+// 属性代理：hoc中可以对WrappedComponent的属性进行增删查改操作
+function propsProxyHOC(WrappedComponent) {
+  return class PP extends React.Component {
+    render() {
+      const newProps = {
+        user: currentLoggedInUser
+      }
+      // 修改WrappedComponent的属性
+      return <WrappedComponent {...this.props} {...newProps}/>
+    }
+  }
+}
+```
+
+```es6
+// 反向继承：hoc返回的组件继承了WrappedComponent, 并通过super关键字访问WrappedComponent中的属性及方法
+// 渲染劫持：hoc控制了WrappedComponent的渲染输出，可以修改render输出或是有条件的渲染元素
+// 通过反向继承可以实渲染劫持
+function inheritanceInversionHOC(WrappedComponent) {
+  return class II extends WrappedComponent {
+    render() {
+        if(this.props.loggedIn) {
+            return super.render();
+        } else {
+            return null
+        }
+    }
+  };
+}
+```
+
+
+## 组件更新机制
+<div class="mermaid">  
+stateDiagram
+    step1 : Pending setState stack
+    step2 : shouldComponentUpdate
+    step3 : Compute next state
+    step4 : update DOM
+
+    [*] --> step1
+	step1 --> step2
+    step2 --> step3
+    step3 --> VirtualDOM
+    state VirtualDOM {
+      step1 : render next element
+      step2 : diff
+      [*] --> step1
+      step1 --> step2
+      step2 --> [*]
+    }
+    VirtualDOM --> step4
+    step4 --> [*]
+</div>
+
 ## 组件通信  
+
 ### 父子组件通信  
+<div class="mermaid">
+graph TD;
+    Parent-->Child;
+</div>
+
+```es6
+// Parent与Child进行通信可通过状态提升
+class Parent extends React.Component {
+    value = 0
+    name = 'username'
+    updateValue() {}
+    render() {
+        return (
+            <>
+                <A name={this.name} updateValue={this.updateValue} />
+            </>
+        )
+    }
+}
+```
+
 ### 兄弟组件通信  
+<div class="mermaid">
+graph TD;
+    Parent-->A;
+    Parent-->B;
+</div>
+
+```es6
+// A与B进行通信可通过状态提升
+class Parent extends React.Component {
+    value = 0
+    updateValue() {}
+    render() {
+        return (
+            <>
+                <A updateValue={this.updateValue} />
+                <B value={this.value} />
+            </>
+        )
+    }
+}
+```
+
+
 ### 嵌套组件通信  
+<div class="mermaid">
+graph TD;
+    Parent-->A;
+    Parent-->B;
+    A-->A1;
+    B-->B1;
+</div>
+
+```es6
+// Parent与A1或B1进行通信：
+// 1. 层层组件传递props
+class Parent extends React.Component {
+    value = 0
+    name = 'username'
+    updateValue() {}
+    render() {
+        return (
+            <>
+                <A name={this.name} updateValue={this.updateValue} />
+            </>
+        )
+    }
+}
+
+class A extends React.Component {
+    render() {
+        return (
+            <A1 name={this.props.name} updateValue={this.props.updateValue} />
+        )
+    }
+}
+
+// 2. 使用context
+const NameContext = React.createContext('username');
+
+class Parent extends React.Component {
+    render() {
+        return (
+            <NameContext.Provider value="username">
+                <A />
+            </>
+        )
+    }
+}
+
+class A extends React.Component {
+    render() {
+        return (
+            <A1 />
+        )
+    }
+}
+
+class A1 extends React.Component {
+    static contextType = NameContext;
+    render() {
+        return <Button name={this.context} />;
+    }
+}
+
+```
+
+
 ### 非嵌套组件通信  
 <div class="mermaid">
 graph TD;
     A-->A1;
     B-->B1;
-    A1-->B1;
-    B1-->A1;
 </div>
-1. EventEmitter发布订阅通信
-2. 使用状态管理进行通信
+
+- EventEmitter发布订阅通信  
+- 使用状态管理进行通信  
 
 ## 状态管理  
+
+### Flux
+- 特性：单向数据流
+- 缺陷： 要频繁绑定事件；无异步action方案
+![Flux](https://user-images.githubusercontent.com/18378034/34917580-58d83204-f983-11e7-804f-4b88caaf1e28.jpg)
+
+### Redux
+- 特性：单向数据流、支持时间回溯、中间件拓展
+- 三大原则，store 唯一，state 只读， reducer 纯函数  
+![Redux](https://user-images.githubusercontent.com/18378034/34917582-5c04bb28-f983-11e7-8fba-aa0f9b3b65dc.jpg)
+
+### MobX
+- 特性： 响应式编程
+![MobX](https://user-images.githubusercontent.com/18378034/34917669-86bd3f24-f984-11e7-9e4a-d4815726752b.png)
+
+
 ## 表单集成  
-## 性能优化  
+### 关注内容
+- 表单数据更新
+- 表单事件处理
+- 数据有效性校验
+- 非react插件集成
+
+### 解决方案  
+- Formik
+- Redux Form
+
+## 性能优化 
+
+### 资源加载性能优化
+- Code Splitting + Lazt Loading
+- Uglify, gzip, CDN, HTTP2
+
+### 组件性能优化
+- 类组件通过实现`shouldComponentUpdate`接口逻辑
+- 使用`React.PureComponent`进行优化，因为`React.PureComponent`实现了`shouldComponentUpdate`接口，会对`prop`和`state`进行浅层对比
+- 函数式组件通过`React.memo`来记忆组件渲染结果，如果props未发生变化，React将跳过渲染，直接复用最近一次渲染结果
+- 函数式组件使用`useMemo`来缓存安规的计算耗时
+- 使用不可变数据结构`immutable-js`来轻松追踪对象数据变化
+- 事件节流防抖
+- 使用 Web Workers 处理 CPU 密集任务
+- SSR

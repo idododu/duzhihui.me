@@ -189,7 +189,7 @@ function whenComplete() {
 }
 
 // 打开淘宝APP
-function openAlipay() {
+function openTaobao() {
     launchApp("手机淘宝");
     toast("等待淘宝启动");
     sleep(2*sleepTimes);
@@ -199,6 +199,13 @@ function openAlipay() {
     return true;
 }
 
+function feed() {
+    toast("准备喂猫");
+    for(var i = 0; i < 2; i++) {
+        click("喂猫领红包");
+        sleep(sleepTimes);
+    }
+}
 //程序主入口
 function mainEntrence() {
     // 前置准备操作
@@ -209,9 +216,11 @@ function mainEntrence() {
     enterCat();
 
     // 领猫币
-    // 进入排行榜
     getCoin()
-    
+
+    // 喂猫
+    feed()
+
     //结束后返回主页面
     whenComplete();
     sleep(sleepTimes);
